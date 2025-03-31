@@ -1,0 +1,94 @@
+name: Chocolatine Workflow
+
+on:
+  push:
+    branches-ignore:
+      - 'ga-ignore-*'
+  pull_request:
+    branches-ignore:
+      - 'ga-ignore-*'
+
+env:
+  MIRROR_URL: "git@github.com:EpitechPGEPromo2029/B-DOP-200-MLH-2-1-chocolatine-loic.philippe.git"
+  EXECUTABLES: "mysh"
+  BANNED_FUNCTIONS: "strcpy,strcat,gets,printf,sprintf"
+
+jobs:
+  check_coding_style:
+    runs-on: ubuntu-latest
+    container: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run coding style checker
+        run: check.sh $(pwd) $(pwd)
+      - name: Display errors
+        run: |
+          if [[ -f coding-style-reports.log ]]; then
+            while IFS= read -r line; do
+              echo "::error file=$(echo "$line" | cut -d':' -f1),line=$(echo "$line" | cut -d':' -f2),title=Coding style error::$line"
+            done < coding-style-reports.log
+            exit -1
+          fi
+
+  check_program_compilation:
+    runs-on: ubuntu-latest
+    needs: check_coding_style
+    container: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Compile program
+        run: make
+        timeout-minutes: 2
+      - name: Clean build
+        run: make clean
+      - name: Verify executables
+        run: |
+          IFS=',' read -r -a execs <<< "$EXECUTABLES"
+          for exe in "${execs[@]}"; do
+            if [[ ! -x $exe ]]; then
+              echo "::error file=$exe,title=Missing or non-executable file::$exe is missing or not executable"
+              exit -1
+            fi
+          done
+
+  run_tests:
+    runs-on: ubuntu-latest
+    needs: check_program_compilation
+    container: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: make tests_run
+        timeout-minutes: 2
+
+  check_banned_functions:
+    runs-on: ubuntu-latest
+    needs: check_coding_style
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Scan for banned functions
+        run: |
+          IFS=',' read -r -a banned <<< "$BANNED_FUNCTIONS"
+          for func in "${banned[@]}"; do
+            if grep -rnw . -e "$func" --include=\*.c --include=\*.h; then
+              echo "::error title=Banned function detected::$func found in source code"
+              exit -1
+            fi
+          done
+
+  push_to_mirror:
+    runs-on: ubuntu-latest
+    needs: run_tests
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Mirror repository
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ env.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
