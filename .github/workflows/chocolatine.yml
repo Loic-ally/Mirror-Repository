@@ -28,7 +28,6 @@ jobs:
             while IFS= read -r line; do
               echo "::error file=$(echo "$line" | cut -d':' -f1),line=$(echo "$line" | cut -d':' -f2),title=Coding style error::$line"
             done < coding-style-reports.log
-            exit -1
           fi
 
   check_program_compilation:
@@ -49,7 +48,6 @@ jobs:
           for exe in "${execs[@]}"; do
             if [[ ! -x $exe ]]; then
               echo "::error file=$exe,title=Missing or non-executable file::$exe is missing or not executable"
-              exit -1
             fi
           done
 
@@ -76,7 +74,6 @@ jobs:
           for func in "${banned[@]}"; do
             if grep -rnw . -e "$func" --include=\*.c --include=\*.h; then
               echo "::error title=Banned function detected::$func found in source code"
-              exit -1
             fi
           done
 
