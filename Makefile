@@ -9,7 +9,7 @@ SRC = main.c \
 
 OBJ = $(SRC:.c=.o)
 
-NAME = 109titration
+NAME = mysh
 
 CFLAGS = -g
 
