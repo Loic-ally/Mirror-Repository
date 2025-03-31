@@ -19,7 +19,7 @@ $(NAME): $(OBJ)
 	gcc -o $(NAME) $(OBJ) $(CFLAGS) -lm
 
 tests_run:
-	gcc -o $(NAME) $(OBJ) $(CFLAGS) -lm
+	gcc -o $(NAME) main.c $(CFLAGS) -lm
 
 clean:
 	rm -f $(OBJ)
