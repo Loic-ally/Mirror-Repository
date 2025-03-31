@@ -41,7 +41,8 @@ jobs:
           cat "$REPORT_FILE"
           while IFS=: read -r FILE LINE TYPE CODE; do
             if [ "$TYPE" = " MINOR" ] || [ "$TYPE" = " MAJOR" ]; then
-              echo "::error file=$FILE,line=$LINE::$TYPE error ($CODE) found."
+              RELATIVE_FILE=$(realpath --relative-to="$(pwd)" "$FILE")
+              echo "::error file=$RELATIVE_FILE,line=$LINE::$TYPE error ($CODE) found."
             fi
           done < "$REPORT_FILE"
           if grep -q ": MAJOR:" "$REPORT_FILE" || grep -q ": MINOR:" "$REPORT_FILE"; then
