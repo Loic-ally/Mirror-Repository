@@ -37,17 +37,17 @@ jobs:
         run: check.sh $(pwd) $(pwd)
       - name: Display errors
         run: |
-          if [ -f coding-style-reports.log ]; then
-            while IFS= read -r line; do
-              file=$(echo "$line" | cut -d':' -f1)
-              line_number=$(echo "$line" | cut -d':' -f2)
-              error_msg=$(echo "$line" | cut -d':' -f3-)
-              echo "::error file=$file,line=$line_number,title=Coding style error::$error_msg"
-            done < coding-style-reports.log
-            if [ -s coding-style-reports.log ]; then
-              exit 1
+          REPORT_FILE="coding-style-reports.log"
+          cat "$REPORT_FILE"
+          while IFS=: read -r FILE LINE TYPE CODE; do
+            if [ "$TYPE" = " MINOR" ] || [ "$TYPE" = " MAJOR" ]; then
+              echo "::error file=$FILE,line=$LINE::$TYPE error ($CODE) found."
             fi
+          done < "$REPORT_FILE"
+          if grep -q ": MAJOR:" "$REPORT_FILE" || grep -q ": MINOR:" "$REPORT_FILE"; then
+            exit 1
           fi
+          echo "No coding style errors found."
         shell: bash
 
   check_program_compilation:
