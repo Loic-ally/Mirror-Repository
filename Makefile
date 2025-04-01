@@ -18,6 +18,9 @@ CFLAGS	=	-g
 $(NAME):	$(OBJ)
 	gcc -o $(NAME) $(OBJ) $(LIB)
 
+tests_run:
+	gcc -o gcc -o $(NAME) $(OBJ) $(LIB)
+
 clean:
 	rm -f $(OBJ)
 	rm -f *.gcno
