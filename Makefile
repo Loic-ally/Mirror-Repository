@@ -19,7 +19,8 @@ $(NAME):	$(OBJ)
 	gcc -o $(NAME) $(OBJ) $(LIB)
 
 tests_run:
-	gcc -o gcc -o $(NAME) $(OBJ) $(LIB)
+
+	gcc -o test main.c
 
 clean:
 	rm -f $(OBJ)
