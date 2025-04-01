@@ -1,30 +1,30 @@
 ##
 ## EPITECH PROJECT, 2024
-## B-MAT-200-MLH-2-1-109titration-loic.philippe
-## File description:
 ## Makefile
+## File description:
+## Makefile for the project
 ##
 
-SRC = main.c \
+SRC	=	main.c \
 
-OBJ = $(SRC:.c=.o)
+OBJ	=	$(SRC:.c=.o)
 
-NAME = mysh
+NAME	=	mysh
 
-CFLAGS = -g
+all:	$(NAME)
 
-all: $(NAME)
+CFLAGS	=	-g
 
-$(NAME): $(OBJ)
-	gcc -o $(NAME) $(OBJ) $(CFLAGS) -lm
-
-tests_run:
-	gcc -o $(NAME) main.c $(CFLAGS) -lm
+$(NAME):	$(OBJ)
+	gcc -o $(NAME) $(OBJ) $(LIB)
 
 clean:
 	rm -f $(OBJ)
+	rm -f *.gcno
+	rm -f *.gcda
 
-fclean: clean
+fclean:		clean
 	rm -f $(NAME)
+	rm -f unit_tests
 
-re: fclean all
+re:	fclean all
