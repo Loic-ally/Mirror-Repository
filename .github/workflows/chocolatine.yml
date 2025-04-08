@@ -10,7 +10,7 @@ on:
 
 env:
   MIRROR_URL: "git@github.com:EpitechPGEPromo2029/B-DOP-200-MLH-2-1-chocolatine-loic.philippe.git"
-  EXECUTABLES: "mysh,test,test2"
+  EXECUTABLES: "mysh"
   BANNED_FUNCTIONS: " strcpy, strcat, gets, printf, sprintf"
 
 jobs:
