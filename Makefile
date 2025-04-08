@@ -9,7 +9,7 @@ SRC	=	main.c \
 
 OBJ	=	$(SRC:.c=.o)
 
-NAME	=	hello
+NAME	=	mysh
 
 all:	$(NAME)
 
